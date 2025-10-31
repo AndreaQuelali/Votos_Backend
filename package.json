@@ -1,11 +1,10 @@
 {
   "name": "votos_backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
-    "start": "node index.js",
-    "start2": "node dist/index.js",
-    "dev": "nodemon index.js",
+    "start": "node dist/main.js",
+    "start2": "node dist/main.js",
     "start:dev": "nodemon src/main.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +22,7 @@
   },
   "dependencies": {
     "body-parser": "^2.2.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0"
   }
 }
