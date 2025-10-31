@@ -3,7 +3,7 @@
 
 import {Router} from 'express';
 
-const voteController = require('./controllers');
+import postVoteController from './controllers';
 
 const router = Router();
 
@@ -11,6 +11,6 @@ router.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
-router.post('/vote', voteController.postVoteController)
-    
+router.post('/vote', postVoteController)
+
 export default router;
