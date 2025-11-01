@@ -4,7 +4,6 @@ import { deleteVoteController, getVoteController, getVoteIdController, patchVote
 const voteRouter = Router();
 
 //C.R.U.D.
-
 //create
 voteRouter.post('/', postVoteController);
 
