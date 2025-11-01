@@ -1,9 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import router from "./routes";
-import healthRouter from "./healthCheck/healthCheck.routes";
 import dotenv from "dotenv";
-import voteRouter from "./votes/votes.routes";
+import router from "./config/server.routes";
 
 dotenv.config();
 
@@ -13,10 +11,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use("/", router);
-app.use("/", healthRouter);
-app.use("/", voteRouter);
-
-
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`)
