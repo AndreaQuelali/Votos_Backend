@@ -4,7 +4,15 @@ import { IVote } from "../interfaces/vote.interface";
 import { ICreateVote } from "../dtos/createVote.dto";
 
 
-class Vote extends Model <IVote, ICreateVote> {}
+class Vote extends Model <IVote, ICreateVote> /*implements IVote */{
+   /* public id!: number;
+    public name!: string;
+    public date!: string;
+    public count!: number;
+    public finished!: boolean;
+    declare createdAt: Date;
+    declare updatedAt: Date;*/
+}
 Vote.init
     (    
     {

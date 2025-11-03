@@ -5,3 +5,10 @@ export interface IVote {
     count: number;
     finished: boolean;
 }
+
+export interface IVoteFilter {
+    name?: string;
+    startAt?: Date;
+    endAt?: Date;
+    status?: boolean;
+}
