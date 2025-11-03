@@ -1,34 +1,12 @@
 import { Request, Response } from "express";
-import { getVotesService } from "./votes.service";
+import { deleteVoteService, getVoteByIdService, getVotesService, postVotesService, updateVoteService } from "./votes.service";
+import { IVoteFilter } from "./interfaces/vote.interface";
 
-//mock database
-let votes= [{
-    id: 1,
-    name: "Votos nulos",
-    date: "2025-10-31",
-    count: 50,
-    finished: true,
-},
-{
-    id: 2,
-    name: "Votos validos",
-    date: "2025-10-31",
-    count: 150,
-    finished: true,
-},{
-    id: 3,
-    name: "Votos en blanco",
-    date: "2025-10-31",
-    count: 30,
-    finished: true,
-}
-];
-
-export const postVoteController = (req: Request, res: Response) => {
+export const postVoteController = async (req: Request, res: Response) => {
     try {
     const data = req.body;
 
-    const result = getVotesService(data);
+    const result = await postVotesService(data);
     if (!result.ok) {
         res.status(400).send({message: result.message, status: 400, ok: false});
         return;
@@ -39,81 +17,108 @@ export const postVoteController = (req: Request, res: Response) => {
     }
 }
 
-export const getVoteController = (req: Request, res: Response) => {
-    res.status(200).send({message: 'Votos obtenidos', status: 200, ok: true, data: votes});
-}
-
-export const getVoteIdController = (req: Request, res: Response) => {
+export const getVoteController = async (req: Request, res: Response) => {
     try {
-    const id = req.params.id
-    const vote = votes.find(vote => vote.id === Number(id))
+        const query = req.query; // or req.body
+        const filter: IVoteFilter = {};
+    
+    // Sanitizar y validar name
+    if (query.name && typeof query.name === 'string') {
+      const sanitizedName = query.name.trim();
+      if (sanitizedName.length > 0 && sanitizedName.length <= 255) {
+        filter.name = sanitizedName;
+      }
+    }
+    
+    // Validar y parsear fechas
+    if (query.startAt && typeof query.startAt === 'string') {
+      const startDate = new Date(query.startAt);
+      if (!isNaN(startDate.getTime())) {
+        filter.startAt = startDate;
+      }
+    }
+    
+    if (query.endAt && typeof query.endAt === 'string') {
+      const endDate = new Date(query.endAt);
+      if (!isNaN(endDate.getTime())) {
+        filter.endAt = endDate;
+      }
+    }
 
-    if (!vote) {
-        res.status(404).send({message: 'Voto no encontrado', status: 404, ok: false});
+    // Sanitizar y validar status
+    if (query.status !== undefined) {
+        if (query.status === 'true') {
+          filter.status = true;
+        } else if (query.status === 'false') {
+          filter.status = false;
+        }
+      }
+
+    const result = await getVotesService(filter);
+    if (!result.ok) {
+        res.status(400).send({message: result.message, status: 400, ok: false});
         return;
     }
-    res.status(200).send({message: 'Voto obtenido', status: 200, ok: true, data: vote});
+    res.status(200).send({message: result.message, status: 200, ok: true, data: result.data});
+    } catch (error) {
+        res.status(500).send({message: 'Error al obtener los votos', status: 500, ok: false});
+    }
+}
+
+export const getVoteIdController = async (req: Request, res: Response) => {
+    try {
+    const id = req.params.id
+    const result = await getVoteByIdService(Number(id));
+    if (!result.ok) {
+        res.status(400).send({message: result.message, status: 400, ok: false});
+        return;
+    }
+    res.status(200).send({message: result.message, status: 200, ok: true, data: result.data});
     } catch (error) {
         res.status(500).send({message: 'Error al obtener el voto', status: 500, ok: false});
     }
 }
 
-export const putVoteController = (req: Request, res: Response) => {
+export const putVoteController = async (req: Request, res: Response) => {
     try {
         const data = req.body; 
-        const id = req.body.id; // en el body recibe el id
-        const vote = votes.find(vote => vote.id === Number(id));
-        if (!vote) {
-            res.status(404).send({message: 'Voto no encontrado', status: 404, ok: false});
+        const id = req.body.id; 
+        const result = await updateVoteService(Number(id), data);
+        if (!result.ok) {
+            res.status(400).send({message: result.message, status: 400, ok: false});
             return;
         }
-        vote.name = data.name;
-        vote.date = data.date;
-        vote.count = data.count;
-        vote.finished = data.finished;  
-
-        votes.map(vote => {if (vote.id === Number(id)) {vote.name = data.name; vote.date = data.date; vote.count = data.count; vote.finished = data.finished;}});
-        res.status(200).send({message: 'Voto actualizado', status: 200, ok: true, data: vote});
+        res.status(200).send({message: result.message, status: 200, ok: true, data: result.data});
     } catch (error) {
         res.status(500).send({message: 'Error al actualizar el voto', status: 500, ok: false});
     }   
 }
     
-export const patchVotePartialController = (req: Request, res: Response) => {
+export const patchVotePartialController = async (req: Request, res: Response) => {
     try {
     const data = req.body; 
-    const id = req.params.id; // en la ruta recibe el id
-    const vote = votes.find(vote => vote.id === Number(id));
-    if (!vote) {
-        res.status(404).send({message: 'Voto no encontrado', status: 404, ok: false});
+    const id = req.params.id; 
+    const result = await updateVoteService(Number(id), data);
+    if (!result.ok) {
+        res.status(400).send({message: result.message, status: 400, ok: false});
         return;
-    }   
-    //segun las reglas del negocio que se quiere actualizar
-    vote.date = data.date;
-    vote.count = data.count;
-    vote.finished = data.finished;
-
-    votes.map(vote => {if (vote.id === Number(id)) {vote.date = data.date; vote.count = data.count; vote.finished = data.finished;}});
-    res.status(200).send({message: 'Voto actualizado', status: 200, ok: true, data: vote});
+    }
+    res.status(200).send({message: result.message, status: 200, ok: true, data: result.data});
     } catch (error) {
         res.status(500).send({message: 'Error al actualizar el voto', status: 500, ok: false});
     }
 }
 
-export const deleteVoteController = (req: Request, res: Response) => {
+export const deleteVoteController = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
-        const voteIndex = votes.findIndex(vote => vote.id === Number(id));
-        if (voteIndex === -1) {
-            res.status(404).send({message: 'Voto no encontrado', status: 404, ok: false});
+        const result = await deleteVoteService(Number(id));
+        if (!result.ok) {
+            res.status(400).send({message: result.message, status: 400, ok: false});
             return;
         }
-        const deletedVote = votes[voteIndex];
-
-       const newVotes = votes.filter(vote => vote.id !== Number(id));
-       votes = newVotes;
        
-       res.status(200).send({message: 'Voto eliminado', status: 200, ok: true, data: deletedVote});
+       res.status(200).send({message: result.message, status: 200, ok: true, data: result.data});
     } catch (error) {
         res.status(500).send({message: 'Error al eliminar el voto', status: 500, ok: false});
     }
