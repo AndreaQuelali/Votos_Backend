@@ -15,6 +15,7 @@ class User extends Model<IUser, UserCreationAttributes> implements IUser {
   public city!: string;
   public email!: string;
   public role!: UserRole;
+  public birthday!: Date;
   public password!: string;
   declare createdAt: Date;
   declare updatedAt: Date;
@@ -91,6 +92,10 @@ User.init(
       validate: {
         notEmpty: true
       }
+    },
+    birthday: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,

@@ -15,6 +15,7 @@ export interface IUser {
     email: string;
     role: UserRole;
     password: string;
+    birthday: Date;
 }
   
 export interface IUserFilter {
