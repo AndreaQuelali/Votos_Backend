@@ -5,10 +5,21 @@ import { ENV } from "./config/env.config";
 import sequelize from "./config/database.config";
 import "./modules/votes/models/vote.model";
 
+async function connectWithRetry() {
+    try {
+      await sequelize.authenticate();
+      console.info('Database connected');
+    } catch (error) {
+      console.error('Unable to connect to the database:', error);
+      setTimeout(connectWithRetry, 5000);
+    }
+  }
+
 async function init() {
     try {
-        await sequelize.authenticate();
-        await sequelize.sync({ force: true });
+        connectWithRetry();
+        //await sequelize.authenticate();
+        //await sequelize.sync({ force: true });
         console.info("Database connection has been established successfully.");
         
         const PORT = ENV.PORT || 3001;
