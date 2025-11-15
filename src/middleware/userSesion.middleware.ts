@@ -14,20 +14,20 @@ export const validateSesionUser = async (req: Request, res: Response, next: Next
     const { authorization } = req.headers
 
     if (!authorization) {
-      return res.status(401).json({ message: 'No autorizado' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
     const [ type, token ] = authorization.split(' ')
     if (type !== "Bearer") {
-      return res.status(401).json({ message: 'No autorizado' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
     jwt.verify(
       token,
       ENV.JWT_SECRET,
       async (error, decoded) => {
         if (error || !decoded) {
-          console.error('Error al validar el JWT', error)
+          console.error('Error validating JWT', error)
           return res.status(401).send({
-            message: 'No acceso'
+            message: 'No access'
           })
         }
 
@@ -37,6 +37,6 @@ export const validateSesionUser = async (req: Request, res: Response, next: Next
     )
 
   } catch (error) {
-    console.error('Error al validar la sesion', error)
+    console.error('Error validating session', error)
   }
 }

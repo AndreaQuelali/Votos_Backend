@@ -8,7 +8,7 @@ export const userRoleValidation = (...roles: UserRole[]) => {
   
     if (!userId) {
       return res.status(401).send({
-        message: 'No autorizado',
+        message: 'Unauthorized',
         ok: false,
         status: 401, 
       })
@@ -18,7 +18,7 @@ export const userRoleValidation = (...roles: UserRole[]) => {
   
     if (!user) {
       return res.status(401).send({
-        message: 'No autorizado',
+        message: 'Unauthorized',
         ok: false,
         status: 401, 
       })
@@ -26,7 +26,7 @@ export const userRoleValidation = (...roles: UserRole[]) => {
     
     if (!roles.includes(user.role)) {
       return res.status(401).send({
-        message: 'No autorizado',
+        message: 'Unauthorized',
         ok: false,
         status: 401, 
       })

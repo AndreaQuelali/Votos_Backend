@@ -20,7 +20,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
     const data = req.body;
     if (!data.title || !data.content) {
       res.status(400).send({
-        message: 'Faltan campos obligatorios: title, content',
+        message: 'Missing required fields: title, content',
         status: 400,
         ok: false,
       });
@@ -29,7 +29,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
 
     if (data.title.length > 255) {
       res.status(400).send({
-        message: 'El título debe tener 255 caracteres o menos',
+        message: 'Title must be at most 255 characters long',
         status: 400,
         ok: false,
       });
@@ -38,7 +38,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
 
     if (data.content.length > 10000) {
       res.status(400).send({
-        message: 'El contenido debe tener 10,000 caracteres o menos',
+        message: 'Content must be at most 10,000 characters long',
         status: 400,
         ok: false,
       });
@@ -49,7 +49,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
     
     if (!userId) {
       res.status(401).send({
-        message: 'Autenticación requerida',
+        message: 'Authentication required',
         status: 401,
         ok: false,
       });
@@ -72,7 +72,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     res.status(201).send({
-      message: 'Post creado exitosamente',
+      message: 'Post created successfully',
       status: 201,
       ok: true,
       data: result.data,
@@ -80,7 +80,7 @@ export const createPost = async (req: AuthenticatedRequest, res: Response) => {
   } catch (error) {
     console.error('Error al crear el post:', error);
     res.status(500).send({
-      message: 'Error interno del servidor',
+      message: 'Internal server error',
       status: 500,
       ok: false,
     });
@@ -144,9 +144,8 @@ export const getPosts = async (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
-    console.error('Error al obtener los posts:', error);
     res.status(500).send({
-      message: 'Error interno del servidor',
+      message: 'Internal server error',
       status: 500,
       ok: false,
     });
@@ -185,9 +184,8 @@ export const getPostById = async (req: Request, res: Response) => {
       data: result.data,
     });
   } catch (error) {
-    console.error('Error al obtener el post:', error);
     res.status(500).send({
-      message: 'Error interno del servidor',
+      message: 'Internal server error',
       status: 500,
       ok: false,
     });
@@ -202,7 +200,7 @@ export const updatePost = async (req: AuthenticatedRequest, res: Response) => {
     const numericId = Number(id);
     if (isNaN(numericId) || numericId <= 0) {
       res.status(400).send({
-        message: 'Post no encontrado',
+        message: 'Post not found',
         status: 400,
         ok: false,
       });
@@ -211,7 +209,7 @@ export const updatePost = async (req: AuthenticatedRequest, res: Response) => {
 
     if (data.title && data.title.length > 255) {
       res.status(400).send({
-        message: 'El título debe tener 255 caracteres o menos',
+        message: 'Title must be at most 255 characters long',
         status: 400,
         ok: false,
       });
@@ -220,7 +218,7 @@ export const updatePost = async (req: AuthenticatedRequest, res: Response) => {
 
     if (data.content && data.content.length > 10000) {
       res.status(400).send({
-        message: 'El contenido debe tener 10,000 caracteres o menos',
+        message: 'The content must be at most 10,000 characters long',
         status: 400,
         ok: false,
       });
@@ -231,7 +229,7 @@ export const updatePost = async (req: AuthenticatedRequest, res: Response) => {
     
     if (!userId) {
       res.status(401).send({
-        message: 'Autenticación requerida',
+        message: 'Authentication required',
         status: 401,
         ok: false,
       });
@@ -257,9 +255,8 @@ export const updatePost = async (req: AuthenticatedRequest, res: Response) => {
       data: result.data,
     });
   } catch (error) {
-    console.error('Error al actualizar el post:', error);
     res.status(500).send({
-      message: 'Error interno del servidor',
+      message: 'Internal server error',
       status: 500,
       ok: false,
     });
@@ -272,9 +269,9 @@ export const deletePost = async (req: AuthenticatedRequest, res: Response) => {
     
     const numericId = Number(id);
     if (isNaN(numericId) || numericId <= 0) {
-      res.status(400).send({
-        message: 'Post no encontrado',
-        status: 400,
+      res.status(404).send({
+        message: 'Post not found',
+        status: 404,
         ok: false,
       });
       return;
@@ -285,7 +282,7 @@ export const deletePost = async (req: AuthenticatedRequest, res: Response) => {
     
     if (!userId) {
       res.status(401).send({
-        message: 'Autenticación requerida',
+        message: 'Authentication required',
         status: 401,
         ok: false,
       });
@@ -295,7 +292,7 @@ export const deletePost = async (req: AuthenticatedRequest, res: Response) => {
     const result = await deletePostService(numericId, userId, isAdmin);
 
     if (!result.ok) {
-      const statusCode = result.message.includes('No autorizado') ? 403 : 404;
+      const statusCode = result.message.includes('Unauthorized') ? 403 : 404;
       res.status(statusCode).send({
         message: result.message,
         status: statusCode,
@@ -311,9 +308,8 @@ export const deletePost = async (req: AuthenticatedRequest, res: Response) => {
       data: result.data,
     });
   } catch (error) {
-    console.error('Error al eliminar el post:', error);
     res.status(500).send({
-      message: 'Error interno del servidor',
+      message: 'Internal server error',
       status: 500,
       ok: false,
     });

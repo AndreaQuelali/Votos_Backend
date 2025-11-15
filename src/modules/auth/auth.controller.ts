@@ -21,7 +21,6 @@ export const login = async (req: Request, res: Response) => {
 
     if (error && !success) {
       res.status(400).send({
-        // message: error.issues,
         message: ENV.NODE_ENV === 'development' ? error.issues : "Bad request",
         status: 400,
         ok: false,

@@ -2,9 +2,9 @@ export enum UserRole {
     SUPER_ADMIN = 'super_admin',
     ADMIN = 'admin',
     USER = 'user'
-  }
+}
   
-  export interface IUser {
+export interface IUser {
     id: string;
     firstName: string;
     lastName: string;
@@ -15,13 +15,13 @@ export enum UserRole {
     email: string;
     role: UserRole;
     password: string;
-  }
+}
   
-  export interface IUserFilter {
+export interface IUserFilter {
     firstName?: string;
     lastName?: string;
     email?: string;
     role?: UserRole;
     country?: string;
     city?: string;
-  }
+}
